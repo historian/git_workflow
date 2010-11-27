@@ -4,6 +4,7 @@ class GitWorkflow::Feature
   argument 'NAME', :type => :string
   def open(env, args)
     guard_clean_stage
+    guard_on_master
 
     branch     = "features/#{env['NAME']}"
     candidates = list_branches.select { |br| br.include?(branch) }
@@ -30,6 +31,13 @@ class GitWorkflow::Feature
 
 private
 
+  def guard_on_master
+    unless current_branch == 'master'
+      puts "Please checkout master first!"
+      exit(1)
+    end
+  end
+
   def guard_clean_stage
     check = /nothing to commit \(working directory clean\)/i
     unless %x[ git status ] =~ check
@@ -40,6 +48,16 @@ private
 
   def list_remotes
     %x[ git remote ].split("\n")
+  end
+
+  def current_branch
+    lines = %x[ git branch -a ].split("\n")
+    lines.each do |line|
+      if line =~ /\*?\s+(\S+)/
+        return $1
+      end
+    end
+    return nil
   end
 
   def list_branches

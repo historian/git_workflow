@@ -5,6 +5,7 @@ class GitWorkflow
   require 'git_workflow/version'
   require 'git_workflow/helpers'
   require 'git_workflow/feature'
+  require 'git_workflow/deployment'
 
   include Opts::DSL
 
@@ -19,6 +20,9 @@ class GitWorkflow
   end
 
   def deployment(env, args)
+    if args.empty?
+      args << "environments"
+    end
     GitWorkflow::Deployment.new.call(env, args)
   end
 

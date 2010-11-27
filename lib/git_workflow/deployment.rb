@@ -4,14 +4,15 @@ class GitWorkflow::Deployment
 
   def environments(env, args)
     branches = list_branches(true)
-    branches = branches.select { |br| br =~ /^env\/.+$/ }
+    branches = branches.select { |br| br =~ /^(env\/.+)|master$/ }
     current  = current_branch
     branches = branches.map do |br|
       br =~ /^env\/(.+)$/
+      name = $1 || 'master'
       if br == current
-        "* #{$1}"
+        "* #{name}"
       else
-        "  #{$1}"
+        "  #{name}"
       end
     end
     puts branches

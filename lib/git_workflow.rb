@@ -3,6 +3,7 @@ class GitWorkflow
   require 'opts'
 
   require 'git_workflow/version'
+  require 'git_workflow/helpers'
   require 'git_workflow/feature'
 
   include Opts::DSL

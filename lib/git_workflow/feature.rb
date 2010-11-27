@@ -51,8 +51,7 @@ class GitWorkflow::Feature
 
       branch = "features/#{env['NAME']}"
 
-      guard_on_branch(branch)
-      guard_clean_stage
+      ensure_on_feature_branch(env['NAME'])
 
       %x[ git checkout master ]
       %x[ git merge --no-ff #{branch} ]
@@ -97,8 +96,7 @@ class GitWorkflow::Feature
 
     branch = "features/#{env['NAME']}"
 
-    guard_on_branch branch
-    guard_clean_stage
+    ensure_on_feature_branch branch
 
     %x[ git merge --no-ff master ]
   end

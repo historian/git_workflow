@@ -23,6 +23,15 @@ module GitWorkflow::Helpers
     !!current_feature
   end
 
+  def ensure_on_feature_branch(name)
+    branch = "features/#{name}"
+    guard_branch_exists branch
+    unless current_branch == branch
+      guard_clean_stage
+      %x[ git checkout #{branch} ]
+    end
+  end
+
   def guard_on_feature_branch(name=nil)
     if name
       guard_on_branch("features/#{name}")
@@ -35,6 +44,13 @@ module GitWorkflow::Helpers
   def guard_on_branch(name)
     unless current_branch == name
       puts "Please checkout #{name} first!"
+      exit(1)
+    end
+  end
+
+  def guard_branch_exists(name)
+    unless list_branches(true).include?(name)
+      puts "Unknown branch #{name}!"
       exit(1)
     end
   end

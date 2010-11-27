@@ -13,14 +13,60 @@ class GitWorkflow::Feature
 
   argument 'NAME', :type => :string
   def update(env, args)
-    p [env, args, list_branches]
+    branch = "features/#{env['NAME']}"
+
+    guard_on_branch branch
+    guard_clean_stage
+
+    %x[ git merge --no-ff master ]
   end
 
 private
 
+  def clean_stage?
+    check = /nothing to commit \(working directory clean\)/i
+    !!(%x[ git status ] =~ check)
+  end
+
+  def guard_on_branch(name)
+    unless current_branch == name
+      puts "Please checkout #{name} first!"
+      exit(1)
+    end
+  end
+
+  def guard_on_master
+    unless current_branch == 'master'
+      puts "Please checkout master first!"
+      exit(1)
+    end
+  end
+
+  def guard_clean_stage
+    check = /nothing to commit \(working directory clean\)/i
+    unless %x[ git status ] =~ check
+      puts "Please commit your changes first!"
+      exit(1)
+    end
+  end
+
+  def list_remotes
+    %x[ git remote ].split("\n")
+  end
+
+  def current_branch
+    lines = %x[ git branch --no-color -a ].split("\n")
+    lines.each do |line|
+      if line =~ /\*\s+(\S+)/
+        return $1
+      end
+    end
+    return nil
+  end
+
   def list_branches
     branches = []
-    lines = %x[ git branch -a ].split("\n")
+    lines = %x[ git branch --no-color -a ].split("\n")
     lines.each do |line|
       line =~ /\*?\s+(\S+)/
       branches << $1

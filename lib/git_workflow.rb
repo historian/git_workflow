@@ -17,4 +17,8 @@ class GitWorkflow
     GitWorkflow::Feature.new.call(env, args)
   end
 
+  def deployment(env, args)
+    GitWorkflow::Deployment.new.call(env, args)
+  end
+
 end

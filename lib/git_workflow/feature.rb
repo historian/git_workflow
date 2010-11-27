@@ -8,7 +8,34 @@ class GitWorkflow::Feature
 
   argument 'NAME', :type => :string
   def close(env, args)
-    p [env, args, list_branches]
+    case args.first
+    when nil
+      branch = "features/#{env['NAME']}"
+
+      guard_on_branch(branch)
+      guard_clean_stage
+
+      %x[ git checkout master ]
+      %x[ git merge --no-ff #{branch} ]
+      if clean_stage?
+        %x[ git branch -d #{branch} ]
+      else
+        puts "Please resolve the merge conflicts!\n" \
+             "Use any of the following commands to continue:\n" \
+             "  git workflow feature close #{env['NAME']} --continue\n" \
+             "  git workflow feature close #{env['NAME']} --abort"
+      end
+
+    when '--continue'
+      guard_on_master
+      guard_clean_stage
+      %x[ git branch -d #{branch} ]
+
+    when '--abort'
+      guard_on_master
+      %x[ git add . ]
+      %x[ git reset --hard master ]
+    end
   end
 
   argument 'NAME', :type => :string

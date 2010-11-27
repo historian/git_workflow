@@ -1,6 +1,21 @@
 class GitWorkflow::Feature
   include Opts::DSL
 
+  def list(env, args)
+    branches = list_branches(true)
+    branches = branches.select { |br| br =~ /^features\// }
+    current  = current_branch
+    branches = branches.map do |br|
+      br =~ /^features\/(.+)$/
+      if br == current
+        "* #{$1}"
+      else
+        "  #{$1}"
+      end
+    end
+    puts branches
+  end
+
   argument 'NAME', :type => :string
   def open(env, args)
     guard_clean_stage
@@ -109,9 +124,13 @@ private
     return nil
   end
 
-  def list_branches
+  def list_branches(local_only=false)
     branches = []
-    lines = %x[ git branch --no-color -a ].split("\n")
+    if local_only
+      lines = %x[ git branch --no-color ].split("\n")
+    else
+      lines = %x[ git branch --no-color -a ].split("\n")
+    end
     lines.each do |line|
       line =~ /\*?\s+(\S+)/
       branches << $1

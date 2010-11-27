@@ -86,8 +86,14 @@ class GitWorkflow::Feature
     end
   end
 
-  argument 'NAME', :type => :string
+  argument 'NAME', :type => :string, :required => false
   def update(env, args)
+    env['NAME'] ||= current_feature
+    unless env['NAME']
+      puts "Please specify a feature!"
+      exit 1
+    end
+
     branch = "features/#{env['NAME']}"
 
     guard_on_branch branch

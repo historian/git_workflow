@@ -4,7 +4,6 @@ class GitWorkflow::Feature
   argument 'NAME', :type => :string
   def open(env, args)
     guard_clean_stage
-    guard_on_master
 
     branch     = "features/#{env['NAME']}"
     candidates = list_branches.select { |br| br.include?(branch) }

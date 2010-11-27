@@ -12,7 +12,7 @@ class GitWorkflow::Feature
     if candidates.include?(branch)
       %x[ git checkout #{branch} ]
     elsif candidates.empty?
-      %x[ git branch #{branch} -t HEAD ]
+      %x[ git branch #{branch} -t master ]
       %x[ git checkout #{branch} ]
     elsif candidates.size == 1
       %x[ git branch #{branch} -t #{candidates.first} ]

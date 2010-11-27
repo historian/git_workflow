@@ -11,6 +11,11 @@ class GitWorkflow::Feature
     p [env, args, list_branches]
   end
 
+  argument 'NAME', :type => :string
+  def update(env, args)
+    p [env, args, list_branches]
+  end
+
 private
 
   def list_branches

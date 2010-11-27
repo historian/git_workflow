@@ -96,7 +96,7 @@ class GitWorkflow::Feature
 
     branch = "features/#{env['NAME']}"
 
-    ensure_on_feature_branch branch
+    ensure_on_feature_branch env['NAME']
 
     %x[ git merge --no-ff master ]
   end

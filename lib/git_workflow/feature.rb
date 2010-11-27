@@ -39,10 +39,16 @@ class GitWorkflow::Feature
     end
   end
 
-  argument 'NAME', :type => :string
+  argument 'NAME', :type => :string, :required => false
   def close(env, args)
     case args.first
     when nil
+      env['NAME'] ||= current_feature
+      unless env['NAME']
+        puts "Please specify a feature!"
+        exit 1
+      end
+
       branch = "features/#{env['NAME']}"
 
       guard_on_branch(branch)
@@ -60,11 +66,21 @@ class GitWorkflow::Feature
       end
 
     when '--continue'
+      unless env['NAME']
+        puts "Please specify a feature!"
+        exit 1
+      end
+
       guard_on_master
       guard_clean_stage
       %x[ git branch -d #{branch} ]
 
     when '--abort'
+      unless env['NAME']
+        puts "Please specify a feature!"
+        exit 1
+      end
+
       guard_on_master
       %x[ git add . ]
       %x[ git reset --hard master ]
@@ -86,6 +102,16 @@ private
   def clean_stage?
     check = /nothing to commit \(working directory clean\)/i
     !!(%x[ git status ] =~ check)
+  end
+
+  def current_feature
+    if current_branch =~ /^features\/(.+)$/
+      $1
+    end
+  end
+
+  def on_feature_branch?
+    !!(current_branch =~ /^features\/.+$/)
   end
 
   def guard_on_branch(name)

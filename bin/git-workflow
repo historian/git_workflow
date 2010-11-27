@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'git_workflow'
+rescue LoadError
+  require 'rubygems'
+  $:.unshift(File.expand_path('../../lib', __FILE__))
+  require 'git_workflow'
+end
+
+GitWorkflow.new.call({}, ARGV)

@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    git_workflow (0.0.1)
+      opts (>= 0.0.1)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    opts (0.0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (>= 1.0.0)
+  git_workflow!
+  opts (>= 0.0.1)

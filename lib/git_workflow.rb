@@ -8,6 +8,9 @@ class GitWorkflow
   include Opts::DSL
 
   def feature(env, args)
+    if args.empty?
+      args << "list"
+    end
     GitWorkflow::Feature.new.call(env, args)
   end
 

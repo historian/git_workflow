@@ -3,7 +3,25 @@ class GitWorkflow::Feature
 
   argument 'NAME', :type => :string
   def open(env, args)
-    p [env, args, list_branches]
+    guard_clean_stage
+    guard_on_master
+
+    branch     = "features/#{env['NAME']}"
+    candidates = list_branches.select { |br| br.include?(branch) }
+
+    if candidates.include?(branch)
+      %x[ git checkout #{branch} ]
+    elsif candidates.empty?
+      %x[ git branch #{branch} -t master ]
+      %x[ git checkout #{branch} ]
+    elsif candidates.size == 1
+      %x[ git branch #{branch} -t #{candidates.first} ]
+      %x[ git checkout #{branch} ]
+    else
+      puts "To many candidates:"
+      puts candidates
+      exit(1)
+    end
   end
 
   argument 'NAME', :type => :string

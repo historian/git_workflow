@@ -1,5 +1,6 @@
 class GitWorkflow::Feature
   include Opts::DSL
+  include GitWorkflow::Helpers
 
   def list(env, args)
     branches = list_branches(true)
@@ -50,8 +51,7 @@ class GitWorkflow::Feature
 
       branch = "features/#{env['NAME']}"
 
-      guard_on_branch(branch)
-      guard_clean_stage
+      ensure_on_feature_branch(env['NAME'])
 
       %x[ git checkout master ]
       %x[ git merge --no-ff #{branch} ]
@@ -96,77 +96,9 @@ class GitWorkflow::Feature
 
     branch = "features/#{env['NAME']}"
 
-    guard_on_branch branch
-    guard_clean_stage
+    ensure_on_feature_branch env['NAME']
 
     %x[ git merge --no-ff master ]
-  end
-
-private
-
-  def clean_stage?
-    check = /nothing to commit \(working directory clean\)/i
-    !!(%x[ git status ] =~ check)
-  end
-
-  def current_feature
-    if current_branch =~ /^features\/(.+)$/
-      $1
-    end
-  end
-
-  def on_feature_branch?
-    !!(current_branch =~ /^features\/.+$/)
-  end
-
-  def guard_on_branch(name)
-    unless current_branch == name
-      puts "Please checkout #{name} first!"
-      exit(1)
-    end
-  end
-
-  def guard_on_master
-    unless current_branch == 'master'
-      puts "Please checkout master first!"
-      exit(1)
-    end
-  end
-
-  def guard_clean_stage
-    check = /nothing to commit \(working directory clean\)/i
-    unless %x[ git status ] =~ check
-      puts "Please commit your changes first!"
-      exit(1)
-    end
-  end
-
-  def list_remotes
-    %x[ git remote ].split("\n")
-  end
-
-  def current_branch
-    lines = %x[ git branch --no-color -a ].split("\n")
-    lines.each do |line|
-      if line =~ /\*\s+(\S+)/
-        return $1
-      end
-    end
-    return nil
-  end
-
-  def list_branches(local_only=false)
-    branches = []
-    if local_only
-      lines = %x[ git branch --no-color ].split("\n")
-    else
-      lines = %x[ git branch --no-color -a ].split("\n")
-    end
-    lines.each do |line|
-      line =~ /\*?\s+(\S+)/
-      branches << $1
-    end
-    branches
   end
 
 end

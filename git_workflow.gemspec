@@ -5,11 +5,11 @@ Gem::Specification.new do |s|
   s.name        = "git_workflow"
   s.version     = GitWorkflow::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = []
-  s.email       = []
+  s.authors     = ["Simon Menke"]
+  s.email       = ["simon.menke@gmail.com"]
   s.homepage    = "http://rubygems.org/gems/git_workflow"
-  s.summary     = "TODO: Write a gem summary"
-  s.description = "TODO: Write a gem description"
+  s.summary     = "A workflow tool for Git"
+  s.description = "Better workflow support for Git"
 
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "git_workflow"

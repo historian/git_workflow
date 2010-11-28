@@ -4,10 +4,15 @@ class GitWorkflow
 
   require 'git_workflow/version'
   require 'git_workflow/helpers'
+  require 'git_workflow/setup'
   require 'git_workflow/topic'
   require 'git_workflow/deployment'
 
   include Opts::DSL
+
+  def setup(env, args)
+    GitWorkflow::Setup.new.call(env, args)
+  end
 
   def topic(env, args)
     if args.empty?

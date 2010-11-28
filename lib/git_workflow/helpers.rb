@@ -41,6 +41,34 @@ module GitWorkflow::Helpers
     end
   end
 
+  def current_environment
+    if current_branch =~ /^env\/(.+)$/
+      $1
+    end
+  end
+
+  def on_environment_branch?
+    !!current_environment
+  end
+
+  def ensure_on_environment_branch(name)
+    branch = "env/#{name}"
+    guard_branch_exists branch
+    unless current_branch == branch
+      guard_clean_stage
+      %x[ git checkout #{branch} ]
+    end
+  end
+
+  def guard_on_environment_branch(name=nil)
+    if name
+      guard_on_branch("env/#{name}")
+    elsif !on_environment_branch?
+      puts "Please checkout open an environment first!"
+      exit(1)
+    end
+  end
+
   def guard_on_branch(name)
     unless current_branch == name
       puts "Please checkout #{name} first!"

@@ -1,13 +1,13 @@
-class GitWorkflow::Feature
+class GitWorkflow::Topic
   include Opts::DSL
   include GitWorkflow::Helpers
 
   def list(env, args)
     branches = list_branches(true)
-    branches = branches.select { |br| br =~ /^features\// }
+    branches = branches.select { |br| br =~ /^topics\// }
     current  = current_branch
     branches = branches.map do |br|
-      br =~ /^features\/(.+)$/
+      br =~ /^topics\/(.+)$/
       if br == current
         "* #{$1}"
       else
@@ -21,7 +21,7 @@ class GitWorkflow::Feature
   def open(env, args)
     guard_clean_stage
 
-    branch     = "features/#{env['NAME']}"
+    branch     = "topics/#{env['NAME']}"
     candidates = list_branches.select { |br| br.include?(branch) }
 
     if candidates.include?(branch)
@@ -43,15 +43,15 @@ class GitWorkflow::Feature
   def close(env, args)
     case args.first
     when nil
-      env['NAME'] ||= current_feature
+      env['NAME'] ||= current_topic
       unless env['NAME']
-        puts "Please specify a feature!"
+        puts "Please specify a topic!"
         exit 1
       end
 
-      branch = "features/#{env['NAME']}"
+      branch = "topics/#{env['NAME']}"
 
-      ensure_on_feature_branch(env['NAME'])
+      ensure_on_topic_branch(env['NAME'])
 
       %x[ git checkout master ]
       %x[ git merge --no-ff #{branch} ]
@@ -60,13 +60,13 @@ class GitWorkflow::Feature
       else
         puts "Please resolve the merge conflicts!\n" \
              "Use any of the following commands to continue:\n" \
-             "  git workflow feature close #{env['NAME']} --continue\n" \
-             "  git workflow feature close #{env['NAME']} --abort"
+             "  git workflow topic close #{env['NAME']} --continue\n" \
+             "  git workflow topic close #{env['NAME']} --abort"
       end
 
     when '--continue'
       unless env['NAME']
-        puts "Please specify a feature!"
+        puts "Please specify a topic!"
         exit 1
       end
 
@@ -76,7 +76,7 @@ class GitWorkflow::Feature
 
     when '--abort'
       unless env['NAME']
-        puts "Please specify a feature!"
+        puts "Please specify a topic!"
         exit 1
       end
 
@@ -88,15 +88,15 @@ class GitWorkflow::Feature
 
   argument 'NAME', :type => :string, :required => false
   def update(env, args)
-    env['NAME'] ||= current_feature
+    env['NAME'] ||= current_topic
     unless env['NAME']
-      puts "Please specify a feature!"
+      puts "Please specify a topic!"
       exit 1
     end
 
-    branch = "features/#{env['NAME']}"
+    branch = "topics/#{env['NAME']}"
 
-    ensure_on_feature_branch env['NAME']
+    ensure_on_topic_branch env['NAME']
 
     %x[ git merge --no-ff master ]
   end

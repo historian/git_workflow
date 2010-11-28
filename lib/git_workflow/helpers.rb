@@ -13,18 +13,18 @@ module GitWorkflow::Helpers
     end
   end
 
-  def current_feature
-    if current_branch =~ /^features\/(.+)$/
+  def current_topic
+    if current_branch =~ /^topics\/(.+)$/
       $1
     end
   end
 
-  def on_feature_branch?
-    !!current_feature
+  def on_topic_branch?
+    !!current_topic
   end
 
-  def ensure_on_feature_branch(name)
-    branch = "features/#{name}"
+  def ensure_on_topic_branch(name)
+    branch = "topics/#{name}"
     guard_branch_exists branch
     unless current_branch == branch
       guard_clean_stage
@@ -32,11 +32,11 @@ module GitWorkflow::Helpers
     end
   end
 
-  def guard_on_feature_branch(name=nil)
+  def guard_on_topic_branch(name=nil)
     if name
-      guard_on_branch("features/#{name}")
-    elsif !on_feature_branch?
-      puts "Please checkout open a feature first!"
+      guard_on_branch("topics/#{name}")
+    elsif !on_topic_branch?
+      puts "Please checkout open a topic first!"
       exit(1)
     end
   end

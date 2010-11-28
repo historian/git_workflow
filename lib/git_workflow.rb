@@ -23,6 +23,9 @@ class GitWorkflow
     if args.empty?
       args << "environments"
     end
+    if args.size == 1 and !%w( environments open update ).include?(args.first)
+      args.unshift "open"
+    end
     GitWorkflow::Deployment.new.call(env, args)
   end
 
